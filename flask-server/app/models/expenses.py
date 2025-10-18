@@ -20,9 +20,10 @@ class Expense(db.Model):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'category_id': self.category_id,
             'amount': self.amount,
             'description': self.description,
-            'incurred_at': self.incurred_at.isoformat(),
+            'date_spent': self.date_spent.isoformat(),
             'created_at': self.created_at.isoformat()
         }
     

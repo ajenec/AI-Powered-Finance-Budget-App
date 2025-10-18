@@ -13,7 +13,7 @@ class Category(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'description': self.description,
+            'type_of': self.type_of,
             'created_at': self.created_at.isoformat()
         }
     

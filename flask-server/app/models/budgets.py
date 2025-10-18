@@ -6,6 +6,7 @@ class Budget(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=False)
+    category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'), nullable=False)
     period_type = db.Column(db.String(50), nullable=False)  # e.g., 'monthly', 'yearly'
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
@@ -21,7 +22,9 @@ class Budget(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'category_id': self.category_id,
-            'amount': self.amount,
+            'period_type': self.period_type,
+            'goal_amount': self.goal_amount,
+            'remaining_amount': self.remaining_amount,
             'start_date': self.start_date.isoformat(),
             'end_date': self.end_date.isoformat(),
             'created_at': self.created_at.isoformat()
@@ -56,4 +59,4 @@ class Budget(db.Model):
 
 
     def __repr__(self):
-        return f'<Budget {self.amount} for category {self.category_id}>'
+        return f'<Budget {self.goal_amount} for category {self.category_id}>'
