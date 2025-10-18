@@ -30,6 +30,7 @@ class Income(db.Model):
     def create_income(data, user_id):
         pass  # Implement income creation logic here
 
+
     def get_incomes_by_user(user_id):
         pass  # Implement logic to retrieve incomes for a specific user
 

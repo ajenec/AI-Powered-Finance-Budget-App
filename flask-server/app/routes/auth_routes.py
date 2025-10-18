@@ -21,7 +21,7 @@ def validate_email(email):
 
 def validate_password(password):
     if len(password) < 6:
-        return False
+        return False, "Password must be at least 6 characters long."
     if not re.search(r'[A-Z]', password):
         return False, "Password must contain at least one uppercase letter."
     if not re.search(r'[a-z]', password):
@@ -30,7 +30,7 @@ def validate_password(password):
         return False, "Password must contain at least one digit."
     if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
         return False, "Password must contain at least one special character."
-    return True
+    return True, ""
 
 
 @auth_bp.route('/register', methods=['POST'])
@@ -42,19 +42,28 @@ def register():
         if not valid:
             return jsonify({'error': message}), 400
         
+        # Validate email format
+        if not validate_email(data['email']):
+            return jsonify({'error': 'Invalid email format'}), 400
+        
+        # Validate password strength
+        valid_password, password_message = validate_password(data['password'])
+        if not valid_password:
+            return jsonify({'error': password_message}), 400
+        
         existing_user = User.query.filter((User.username == data['username']) | (User.email == data['email'])).first()
 
         if existing_user:
             return jsonify({'error': 'Username or email already exists'}), 400
         
-        hashed_pw = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+        # Create user and use model method for password hashing
         new_user = User(
             first_name=data['first_name'],
             last_name=data['last_name'],
             email=data['email'],
-            username=data['username'],
-            password_hash=hashed_pw
+            username=data['username']
         )
+        new_user.set_password(data['password'])
 
         db.session.add(new_user)
         db.session.commit()
@@ -72,8 +81,8 @@ def login():
         password = data.get('password')
 
         user = User.query.filter_by(email=email).first()
-        if not user or not bcrypt.check_password_hash(user.password_hash, password):
-            return jsonify({'access_token': access_token}), 200
+        if not user or not user.check_password(password):
+            return jsonify({'error': 'Invalid email or password'}), 401
         
         access_token = create_access_token(identity=user.username)
 
@@ -85,7 +94,7 @@ def login():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@auth_bp.bp.route('/profile', methods=['GET'])
+@auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
 def profile():
     try:
