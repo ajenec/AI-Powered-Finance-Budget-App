@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import Bcrypt
-from ..models import User, db
+from ..models import User, db, Category
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 import re
 
@@ -67,6 +67,23 @@ def register():
 
         db.session.add(new_user)
         db.session.commit()
+        # Seed default categories for this new user
+        try:
+            default_categories = [
+                {'name': 'Food', 'type_of': 'expense', 'is_default': True},
+                {'name': 'Bills', 'type_of': 'expense', 'is_default': True},
+                {'name': 'Savings', 'type_of': 'expense', 'is_default': True},
+                {'name': 'Salary', 'type_of': 'income', 'is_default': True},
+            ]
+            for c in default_categories:
+                try:
+                    Category.create_category(c, new_user.id)
+                except Exception:
+                    # swallow individual category errors to avoid breaking registration
+                    pass
+        except Exception:
+            # If seeding fails, we don't want to fail the registration
+            pass
         return jsonify({'message': 'User registered successfully'}), 201
     except Exception as e:
         db.session.rollback()
