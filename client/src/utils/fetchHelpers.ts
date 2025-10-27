@@ -2,7 +2,7 @@ import { TOKEN_KEY } from "./token";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
-export function getAuthHeaders(extraHeaders = {}) {
+export function getAuthHeaders(extraHeaders: Record<string, string> = {}) {
   // Read token using the shared key used across the app.
   const token = localStorage.getItem(TOKEN_KEY);
   return token

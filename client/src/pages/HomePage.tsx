@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const HomePage: React.FC = () => {
   return (
@@ -9,18 +10,12 @@ const HomePage: React.FC = () => {
       <p className="lead mt-3">
         Manage your finances with AI-powered insights!
       </p>
-      <button
-        className="btn btn-primary btn-lg mt-4"
-        onClick={() => (window.location.href = "/login")}
-      >
+      <Link to="/login" className="btn btn-primary btn-lg mt-4">
         Login
-      </button>
-      <button
-        className="btn btn-secondary btn-lg mt-4"
-        onClick={() => (window.location.href = "/register")}
-      >
+      </Link>
+      <Link to="/register" className="btn btn-secondary btn-lg mt-4">
         Sign up
-      </button>
+      </Link>
     </div>
   );
 };
