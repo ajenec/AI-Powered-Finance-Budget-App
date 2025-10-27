@@ -130,3 +130,42 @@ def profile():
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@auth_bp.route('/profile', methods=['PATCH'])
+@jwt_required()
+def update_profile():
+    try:
+        current_username = get_jwt_identity()
+        user = User.query.filter_by(username=current_username).first()
+
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        data = request.get_json() or {}
+
+        # Only allow certain fields to be updated
+        allowed = {'first_name', 'last_name', 'username', 'email'}
+        updates = {k: v for k, v in data.items() if k in allowed}
+
+        # If username or email are changing, ensure uniqueness
+        if 'username' in updates and updates['username'] != user.username:
+            existing = User.query.filter_by(username=updates['username']).first()
+            if existing:
+                return jsonify({'error': 'Username already in use'}), 400
+
+        if 'email' in updates and updates['email'] != user.email:
+            existing = User.query.filter_by(email=updates['email']).first()
+            if existing:
+                return jsonify({'error': 'Email already in use'}), 400
+
+        # Apply updates
+        for k, v in updates.items():
+            setattr(user, k, v)
+
+        db.session.commit()
+
+        return jsonify(user.to_dict()), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
