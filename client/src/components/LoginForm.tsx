@@ -13,7 +13,8 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     try {
       await login(email, password);
-      // Redirect or update UI on successful login
+      // Redirect to profile after successful login so token is stored first
+      navigate("/profile");
     } catch (err: any) {
       setError(err.message || "Login failed");
     }
@@ -49,11 +50,7 @@ const LoginForm: React.FC = () => {
           required
         />
       </div>
-      <button
-        type="submit"
-        onClick={() => navigate("/profile")}
-        className="btn btn-primary"
-      >
+      <button type="submit" className="btn btn-primary">
         Login
       </button>
     </form>

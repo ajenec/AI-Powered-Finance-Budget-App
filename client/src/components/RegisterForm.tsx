@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { signup } from "../api/authFetch";
 
@@ -9,6 +10,7 @@ const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +91,11 @@ const RegisterForm: React.FC = () => {
           required
         />
       </div>
-      <button type="submit" className="btn btn-primary">
+      <button
+        type="submit"
+        onClick={() => navigate("/login")}
+        className="btn btn-primary"
+      >
         Register
       </button>
     </form>

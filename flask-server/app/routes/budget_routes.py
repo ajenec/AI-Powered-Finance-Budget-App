@@ -28,6 +28,12 @@ def create_budget():
         if not user:
             return jsonify({'error': 'User not found'}), 404
         data = request.get_json()
+        # If no JSON was provided, return a clear 400 with diagnostic info
+        if data is None:
+            # Log raw body for debugging (may be empty or malformed)
+            raw = request.get_data(as_text=True)
+            request.environ.get('wsgi.errors', None) and print(f"DEBUG: raw request body: {raw}")
+            return jsonify({'error': 'Request body must be JSON and not empty'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     # Convert date strings to datetime if necessary
@@ -46,6 +52,7 @@ def create_budget():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+
 @budget_bp.route('/budgets/<int:budget_id>', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_budget(budget_id):
@@ -55,6 +62,10 @@ def update_budget(budget_id):
         if not user:
             return jsonify({'error': 'User not found'}), 404
         data = request.get_json()
+        if data is None:
+            raw = request.get_data(as_text=True)
+            request.environ.get('wsgi.errors', None) and print(f"DEBUG: raw request body: {raw}")
+            return jsonify({'error': 'Request body must be JSON and not empty'}), 400
         # Convert date strings if provided
         if 'start_date' in data and isinstance(data['start_date'], str):
             data['start_date'] = datetime.fromisoformat(data['start_date'])

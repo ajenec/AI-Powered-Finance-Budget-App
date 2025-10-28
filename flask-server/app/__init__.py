@@ -38,10 +38,10 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
-    app.register_blueprint(budget_bp, url_prefix='/api/budgets')
-    app.register_blueprint(category_bp, url_prefix='/api/categories')
-    app.register_blueprint(expense_bp, url_prefix='/api/expenses')
-    app.register_blueprint(income_bp, url_prefix='/api/incomes')
+    app.register_blueprint(budget_bp, url_prefix='/api')
+    app.register_blueprint(category_bp, url_prefix='/api')
+    app.register_blueprint(expense_bp, url_prefix='/api')
+    app.register_blueprint(income_bp, url_prefix='/api')
 
     # Create database tables
     with app.app_context():

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import type { NewBudget, UpdateBudget } from "../../types/budget";
+import { getCategories } from "../../api/categoriesFetch";
+import type { Category } from "../../api/categoriesFetch";
 
 type Props = {
   initial?: UpdateBudget;
@@ -15,13 +17,36 @@ export default function BudgetForm({
 }: Props) {
   const [form, setForm] = useState<UpdateBudget | NewBudget>(
     initial || {
-      category_id: 0,
       period_type: "monthly",
       start_date: new Date().toISOString().slice(0, 10),
       end_date: new Date().toISOString().slice(0, 10),
       goal_amount: 0,
     }
   );
+
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  // If the parent provides/updates an `initial` prop (e.g. after async load),
+  // keep the internal form state in sync so required fields like category_id
+  // are populated before submit.
+  useEffect(() => {
+    if (initial) {
+      setForm((f) => ({
+        ...(f as UpdateBudget),
+        ...(initial as UpdateBudget),
+      }));
+    }
+    // load categories when form mounts / initial changes
+    const load = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data || []);
+      } catch (err) {
+        console.error("Failed to load categories:", err);
+      }
+    };
+    load();
+  }, [initial]);
 
   const handleChange = (key: keyof UpdateBudget, value: unknown) => {
     setForm((f) => ({ ...(f as UpdateBudget), [key]: value }));
@@ -35,15 +60,25 @@ export default function BudgetForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
       <div>
-        <label className="block text-sm font-medium">Category ID</label>
-        <input
-          type="number"
+        <label className="block text-sm font-medium">Category</label>
+        <select
           value={(form as UpdateBudget).category_id ?? ""}
-          onChange={(e) => handleChange("category_id", Number(e.target.value))}
+          onChange={(e) =>
+            handleChange(
+              "category_id",
+              e.target.value === "" ? undefined : Number(e.target.value)
+            )
+          }
           className="border rounded p-1 w-full"
-        />
+        >
+          <option value="">— No category —</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
       </div>
-
       <div>
         <label className="block text-sm font-medium">Period Type</label>
         <select
