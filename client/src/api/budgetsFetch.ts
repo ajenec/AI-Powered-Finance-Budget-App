@@ -20,6 +20,7 @@ export const createBudget = async (budgetData: NewBudget): Promise<Budget> => {
     "/api/budgets",
     getPostOptions(budgetData)
   );
+  console.log("createBudget data:", data, "error:", error);
   if (error) throw error;
   return data as Budget;
 };
