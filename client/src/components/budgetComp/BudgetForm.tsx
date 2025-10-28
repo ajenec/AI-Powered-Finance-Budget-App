@@ -58,79 +58,86 @@ export default function BudgetForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <>
       <div>
-        <label className="block text-sm font-medium">Category</label>
-        <select
-          value={(form as UpdateBudget).category_id ?? ""}
-          onChange={(e) =>
-            handleChange(
-              "category_id",
-              e.target.value === "" ? undefined : Number(e.target.value)
-            )
-          }
-          className="border rounded p-1 w-full"
+        <form
+          onSubmit={handleSubmit}
+          className="p-5 bg-light rounded-4 shadow-lg w-100"
+          style={{ maxWidth: "400px" }}
         >
-          <option value="">— No category —</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium">Period Type</label>
-        <select
-          value={(form as UpdateBudget).period_type}
-          onChange={(e) => handleChange("period_type", e.target.value)}
-          className="border rounded p-1 w-full"
-        >
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-        </select>
-      </div>
+          <div>
+            <label className="fw-semibold">Category</label>
+            <select
+              value={(form as UpdateBudget).category_id ?? ""}
+              onChange={(e) =>
+                handleChange(
+                  "category_id",
+                  e.target.value === "" ? undefined : Number(e.target.value)
+                )
+              }
+              className="border rounded p-1 w-full"
+            >
+              <option value="">— No category —</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="fw-semibold">Period Type</label>
+            <select
+              value={(form as UpdateBudget).period_type}
+              onChange={(e) => handleChange("period_type", e.target.value)}
+              className="form-control form-control-lg"
+            >
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="block text-sm font-medium">Start Date</label>
-          <input
-            type="date"
-            value={(form as UpdateBudget).start_date ?? ""}
-            onChange={(e) => handleChange("start_date", e.target.value)}
-            className="border rounded p-1 w-full"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">End Date</label>
-          <input
-            type="date"
-            value={(form as UpdateBudget).end_date ?? ""}
-            onChange={(e) => handleChange("end_date", e.target.value)}
-            className="border rounded p-1 w-full"
-          />
-        </div>
-      </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="fw-semibold">Start Date</label>
+              <input
+                type="date"
+                value={(form as UpdateBudget).start_date ?? ""}
+                onChange={(e) => handleChange("start_date", e.target.value)}
+                className="form-control form-control-lg"
+              />
+            </div>
+            <div>
+              <label className="fw-semibold">End Date</label>
+              <input
+                type="date"
+                value={(form as UpdateBudget).end_date ?? ""}
+                onChange={(e) => handleChange("end_date", e.target.value)}
+                className="form-control form-control-lg"
+              />
+            </div>
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium">Goal Amount</label>
-        <input
-          type="number"
-          step="0.01"
-          value={(form as UpdateBudget).goal_amount ?? 0}
-          onChange={(e) => handleChange("goal_amount", Number(e.target.value))}
-          className="border rounded p-1 w-full"
-        />
-      </div>
+          <div>
+            <label className="fw-semibold">Goal Amount</label>
+            <input
+              type="number"
+              step="0.01"
+              value={(form as UpdateBudget).goal_amount ?? 0}
+              onChange={(e) =>
+                handleChange("goal_amount", Number(e.target.value))
+              }
+              className="form-control form-control-lg"
+            />
+          </div>
 
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-3 py-1 rounded"
-        >
-          {submitLabel}
-        </button>
+          <div className="flex justify-end">
+            <button type="submit" className="btn btn-primary w-100 btn-lg mb-3">
+              {submitLabel}
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </>
   );
 }
