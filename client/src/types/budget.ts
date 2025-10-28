@@ -1,7 +1,8 @@
 export interface Budget {
   id: number;
   user_id: number;
-  category_id: number;
+  // category may be nullable on the server; make optional here
+  category_id?: number | null;
   period_type: string; // e.g. 'monthly', 'yearly'
   start_date: string; // ISO date string
   end_date: string; // ISO date string
