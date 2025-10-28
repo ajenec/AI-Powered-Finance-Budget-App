@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { login } from "../api/authFetch";
 import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -21,39 +22,60 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="login-form">
-      <h2>Login</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <div className="mb-3">
-        <label htmlFor="email" className="form-label">
-          Email address
-        </label>
-        <input
-          type="email"
-          className="form-control"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+    <>
+      <div
+        className="d-flex justify-content-center align-items-center vh-100"
+        style={{
+          background: "linear-gradient(135deg, #4A90E2 0%, #96CFF3 100%)",
+          fontFamily: "'Poppins', sans-serif",
+        }}
+      >
+        <form
+          onSubmit={handleSubmit}
+          className="p-5 bg-light rounded-4 shadow-lg w-100"
+          style={{ maxWidth: "400px" }}
+        >
+          <h2 className="text-center mb-4 fw-bold text-primary">Login</h2>
+          {error && <div>{error}</div>}
+          <div className="mb-3">
+            <label htmlFor="email" className="fw-semibold">
+              Email address
+            </label>
+            <input
+              type="email"
+              className="form-control form-control-lg"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="fw-semibold">
+              Password
+            </label>
+            <input
+              type="password"
+              className="form-control form-control-lg"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary w-100 btn-lg mb-3">
+            Login
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline-secondary w-100"
+            onClick={() => navigate("/register")}
+          >
+            Need an account? Register
+          </button>
+        </form>
       </div>
-      <div className="mb-3">
-        <label htmlFor="password" className="form-label">
-          Password
-        </label>
-        <input
-          type="password"
-          className="form-control"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit" className="btn btn-primary">
-        Login
-      </button>
-    </form>
+    </>
   );
 };
 
