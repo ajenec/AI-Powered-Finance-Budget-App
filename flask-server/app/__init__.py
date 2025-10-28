@@ -2,13 +2,14 @@ from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
-# from flask_migrate import Migrate
+from flask_migrate import Migrate
 from .models import db
 from .routes.auth_routes import auth_bp
 from .routes.budget_routes import budget_bp
 from .routes.category_routes import category_bp
 from .routes.expense_routes import expense_bp
 from .routes.income_routes import income_bp
+from .routes.ai_routes import ai_bp
 from config import Config
 
 # Initialize extensions
@@ -21,6 +22,7 @@ def create_app():
 
     # Initialize extensions with app
     db.init_app(app)
+    Migrate(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
     CORS(app)
@@ -42,9 +44,10 @@ def create_app():
     app.register_blueprint(category_bp, url_prefix='/api')
     app.register_blueprint(expense_bp, url_prefix='/api')
     app.register_blueprint(income_bp, url_prefix='/api')
+    app.register_blueprint(ai_bp, url_prefix='/api')
 
     # Create database tables
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
 
     return app

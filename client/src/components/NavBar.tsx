@@ -13,7 +13,7 @@ const NavBar: React.FC = () => {
       }}
     >
       <div className="container-fluid d-flex justify-content-between align-items-center">
-        <Link className="navbar-brand fw-bold text-white fs-4" to="/dashboard">
+        <Link className="navbar-brand fw-bold text-white fs-4" to="/">
           StackWise
         </Link>
 
