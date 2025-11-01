@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
+import NavBar from "../components/ui/NavBar";
+import Footer from "../components/ui/Footer";
 import { getExpenses } from "../api/expensesFetch";
 import { getIncomes } from "../api/incomesFetch";
 import { getBudgets } from "../api/budgetsFetch";

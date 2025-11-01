@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ExpenseForm from "../components/expensesComp/ExpenseForm";
 import ExpenseList from "../components/expensesComp/ExpenseList";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
+import NavBar from "../components/ui/NavBar";
+import Footer from "../components/ui/Footer";
 import type { Expense, NewExpense } from "../types/expense";
 import {
   createExpense,

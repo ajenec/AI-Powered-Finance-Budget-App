@@ -1,31 +1,134 @@
-/* client/src/index.css */
-:root {
-  --main-serif: "Borel", cursive, Georgia, "Times New Roman", serif;
-  --main-sans: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto,
+/* Import Professional Font - Inter */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* Apply font globally */
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
 
-html,
-body,
-#root {
-  height: 100%;
+/* Header Glass Effect */
+.header-glass {
+  background-color: rgba(33, 37, 41, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Body remains readable */
-body {
-  font-family: var(--main-sans);
+/* Logo Icon Wrapper */
+.logo-icon-wrapper {
+  background-color: rgba(13, 202, 240, 0.15);
+  border: 1px solid rgba(13, 202, 240, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Display / heading style */
-.display-heading,
-h1,
-h2 {
-  font-family: var(--display-font);
-  font-weight: 400; /* Borel is typically a display/cursive face with limited weights */
+.logo-icon {
+  color: #89d7e6bb;
 }
 
-.borel-regular {
-  font-family: "Borel", cursive;
-  font-weight: 400;
-  font-style: normal;
+/* Brand Text */
+.brand-text {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.brand-highlight {
+  color: #afecf8;
+}
+
+/* Custom Toggle Button */
+.custom-toggler {
+  padding: 0.5rem;
+}
+
+.custom-toggler:focus {
+  box-shadow: none;
+}
+
+/* Navigation Links */
+.nav-link-custom {
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.nav-link-custom:hover {
+  color: #afecf8 !important;
+}
+
+.nav-link-custom::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: #0dcaf0;
+  transition: width 0.2s ease;
+}
+
+.nav-link-custom:hover::after {
+  width: 80%;
+}
+
+/* Sign In Button */
+.btn-signin {
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: transparent;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-signin:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Sign Up Button */
+.btn-signup {
+  font-weight: 600;
+  background-color: #3bdeff;
+  color: #1a1d20;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(13, 202, 240, 0.2);
+}
+
+.btn-signup:hover {
+  background-color: #73dff5;
+  color: #1a1d20;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13, 202, 240, 0.3);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .navbar-nav {
+    padding-top: 1rem;
+  }
+
+  .nav-link-custom {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .d-flex.gap-2 {
+    margin-top: 1rem;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .d-flex.gap-2 .btn {
+    width: 100%;
+  }
 }

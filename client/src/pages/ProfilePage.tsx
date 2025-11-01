@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchUser, updateUserProfile, logout } from "../api/authFetch";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
+import NavBar from "../components/ui/NavBar";
+import Footer from "../components/ui/Footer";
 
 const ProfilePage: React.FC = () => {
   const [user, setUser] = useState<any | null>(null);

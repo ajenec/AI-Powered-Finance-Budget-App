@@ -1,5 +1,4 @@
 from . import db
-from . import db
 from datetime import datetime
 
 class AiInsight(db.Model):
@@ -82,5 +81,3 @@ class AiInsight(db.Model):
     def __repr__(self):
         title_preview = (self.title[:40] + '...') if self.title and len(self.title) > 43 else (self.title or '')
         return f'<AiInsight "{title_preview}" for User {self.user_id}>'
-    def __repr__(self):
-        return f'<AiInsight {self.insight_type} for User {self.user_id}>'

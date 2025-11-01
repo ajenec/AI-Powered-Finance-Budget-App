@@ -7,7 +7,6 @@ class Income(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=False)
-    category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'), nullable=True)
     amount = db.Column(db.Float, nullable=False)
     source = db.Column(db.String(100), nullable=False)
     received_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -15,7 +14,6 @@ class Income(db.Model):
     deleted_at = db.Column(db.DateTime, nullable=True)
 
     user = db.relationship('User', backref=db.backref('incomes', lazy=True))
-    category = db.relationship('Category', backref=db.backref('incomes', lazy=True))
 
     def to_dict(self):
         return {
@@ -31,7 +29,6 @@ class Income(db.Model):
         try:
             new_income = Income(
                 user_id=user_id,
-                category_id=data.get('category_id'),
                 amount=data['amount'],
                 source=data['source'],
                 received_at=data.get('received_at', datetime.utcnow())
@@ -52,8 +49,6 @@ class Income(db.Model):
         if not income:
             return None
         try:
-            if 'category_id' in data:
-                income.category_id = data['category_id']
             if 'amount' in data:
                 income.amount = data['amount']
             if 'source' in data:

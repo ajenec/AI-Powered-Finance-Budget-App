@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import IncomeForm from "../components/incomesComp/IncomeForm";
 import IncomeList from "../components/incomesComp/IncomeList";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
+import NavBar from "../components/ui/NavBar";
+import Footer from "../components/ui/Footer";
 import type { Income, NewIncome } from "../types/income";
 import { createIncome, getIncomes, deleteIncome } from "../api/incomesFetch";
 

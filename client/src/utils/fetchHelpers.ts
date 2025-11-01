@@ -20,29 +20,53 @@ export const getDeleteOptions = () => ({
   headers: getAuthHeaders(),
 });
 
-export const getPostOptions = (body: Record<string, unknown>) => ({
+// Accept arbitrary payload shapes (unknown) — callers will provide typed objects
+export const getPostOptions = (body: unknown) => ({
   method: "POST",
   headers: getAuthHeaders({ "Content-Type": "application/json" }),
-  body: JSON.stringify(body),
+  body: JSON.stringify(body as any),
 });
 
-export const getPatchOptions = (body: Record<string, unknown>) => ({
+export const getPatchOptions = (body: unknown) => ({
   method: "PATCH",
   headers: getAuthHeaders({ "Content-Type": "application/json" }),
-  body: JSON.stringify(body),
+  body: JSON.stringify(body as any),
 });
 
-export const getPutOptions = (body: Record<string, unknown>) => ({
+export const getPutOptions = (body: unknown) => ({
   method: "PUT",
   headers: getAuthHeaders({ "Content-Type": "application/json" }),
-  body: JSON.stringify(body),
+  body: JSON.stringify(body as any),
 });
 
-export const fetchHandler = async (url: string, options = {}) => {
+export const fetchHandler = async (
+  url: string,
+  options: RequestInit = {},
+  timeoutMs = 10000
+) => {
   try {
     // Ensure URL starts with /api for proxy routing
     const fullUrl = url.startsWith("/api") ? url : `${API_BASE_URL}${url}`;
-    const response = await fetch(fullUrl, options);
+
+    // Do not mutate caller's options
+    const opts: RequestInit = { ...options };
+
+    // If caller provided a signal, respect it. Otherwise create one and attach a timeout.
+    let timeoutId: number | undefined;
+    if (!(opts as any).signal) {
+      const controller = new AbortController();
+      opts.signal = controller.signal;
+      // Use window.setTimeout so typing matches browser environment
+      timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+    }
+
+    const response = await fetch(fullUrl, opts);
+
+    // Clear timeout if fetch completed
+    if (typeof timeoutId !== "undefined") {
+      clearTimeout(timeoutId);
+    }
+
     const { ok, status, statusText, headers } = response;
 
     if (!ok) {
@@ -64,7 +88,14 @@ export const fetchHandler = async (url: string, options = {}) => {
     );
     const responseData = await (isJson ? response.json() : response.text());
     return [responseData, null];
-  } catch (error) {
+  } catch (error: any) {
+    // Normalize AbortError to a clearer error object
+    if (error && error.name === "AbortError") {
+      const abortErr = new Error("Request aborted (timeout or cancelled)");
+      (abortErr as any).code = "ABORT";
+      console.warn("fetchHandler aborted:", error);
+      return [null, abortErr];
+    }
     console.warn("fetchHandler error:", error);
     return [null, error];
   }

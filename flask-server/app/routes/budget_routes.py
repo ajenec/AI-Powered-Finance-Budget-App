@@ -42,11 +42,11 @@ def create_budget():
             data['start_date'] = datetime.fromisoformat(data['start_date'])
         if 'end_date' in data and isinstance(data['end_date'], str):
             data['end_date'] = datetime.fromisoformat(data['end_date'])
-        # Validate category ownership if provided
+        # Validate category exists (categories are now global)
         if data and data.get('category_id') is not None:
-            cat = Category.query.filter_by(id=data.get('category_id'), user_id=user.id).first()
+            cat = Category.query.filter_by(id=data.get('category_id')).first()
             if not cat:
-                return jsonify({'error': 'Invalid category_id or not authorized'}), 400
+                return jsonify({'error': 'Invalid category_id'}), 400
         new_budget = Budget.create_budget(data, user.id)
         return jsonify(new_budget.to_dict()), 201
     except Exception as e:
@@ -71,11 +71,11 @@ def update_budget(budget_id):
             data['start_date'] = datetime.fromisoformat(data['start_date'])
         if 'end_date' in data and isinstance(data['end_date'], str):
             data['end_date'] = datetime.fromisoformat(data['end_date'])
-        # Validate category ownership if provided
+        # Validate category exists (categories are now global)
         if data and data.get('category_id') is not None:
-            cat = Category.query.filter_by(id=data.get('category_id'), user_id=user.id).first()
+            cat = Category.query.filter_by(id=data.get('category_id')).first()
             if not cat:
-                return jsonify({'error': 'Invalid category_id or not authorized'}), 400
+                return jsonify({'error': 'Invalid category_id'}), 400
 
         # Ensure the budget belongs to the user before updating
         existing = Budget.query.filter_by(id=budget_id, user_id=user.id).first()

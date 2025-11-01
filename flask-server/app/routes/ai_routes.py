@@ -71,7 +71,8 @@ def generate_ai_insight():
         model.fit(df)
         future = model.make_future_dataframe(periods=14)
         forecast = model.predict(future)
-        predicted_next_14 = forecast.trail(14)['yhat'].sum()
+        # Use the last 14 predicted rows
+        predicted_next_14 = forecast.tail(14)['yhat'].sum()
 
         # spending stats
         total_spent = df['y'].sum()
@@ -144,7 +145,7 @@ def delete_ai_insight(insight_id):
         insight = AiInsight.query.filter_by(id=insight_id, user_id=user.id).first()
         if not insight:
             return jsonify({'error': 'Insight not found'}), 404
-        AiInsight.delete_insight(insight.id)
+        AiInsight.delete_insight(insight.id, user.id)
         return jsonify({'message': 'Insight deleted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500

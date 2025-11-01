@@ -3,13 +3,8 @@ import React from "react";
 const Footer: React.FC = () => {
   return (
     <footer
-      className="text-white py-4 shadow-sm"
+      className="text-white py-4 shadow-sm mt-auto"
       style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
         background: "linear-gradient(90deg, #4A90E2, #96CFF3)",
       }}
     >

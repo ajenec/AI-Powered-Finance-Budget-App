@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import BudgetForm from "../components/budgetComp/BudgetForm";
 import BudgetList from "../components/budgetComp/BudgetList";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
+import NavBar from "../components/ui/NavBar";
+import Footer from "../components/ui/Footer";
 import type { Budget, NewBudget } from "../types/budget";
 import { getBudgets, createBudget, deleteBudget } from "../api/budgetsFetch";
 import { getToken } from "../api/authFetch";
-import { getCategories, Category } from "../api/categoriesFetch";
 
 const BudgetsPage: React.FC = () => {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -20,14 +18,6 @@ const BudgetsPage: React.FC = () => {
       try {
         const data = await getBudgets();
         setBudgets(data || []);
-        // load categories as well for the budget form
-        try {
-          const cats = await getCategories();
-          setCategories(cats || []);
-        } catch (catErr) {
-          // don't block budgets list on categories load
-          console.warn("Failed to load categories", catErr);
-        }
       } catch (err: any) {
         setError(err?.message || "Failed to load budgets");
       } finally {
@@ -76,13 +66,7 @@ const BudgetsPage: React.FC = () => {
         <h1>Budgets Page</h1>
         {error && <div className="alert alert-danger">{error}</div>}
         <div className="mb-4">
-          <BudgetForm
-            onSubmit={handleCreate}
-            // Only provide an initial category if we actually loaded one.
-            initial={
-              categories.length ? { category_id: categories[0].id } : undefined
-            }
-          />
+          <BudgetForm onSubmit={handleCreate} submitLabel="Create" />
         </div>
 
         {loading ? (

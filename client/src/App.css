@@ -1,16 +1,254 @@
-/* .home-container {
+/* Hero Section */
+.hero-section {
+  min-height: 600px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 100vh; /* full viewport height */
-/* background-color: #000000; /* black background */
-/* color: #ffffff; /* white text */
-/* padding: 2rem;
-  text-align: center;
+  padding-top: 120px !important;
+  padding-bottom: 80px !important;
+  background: linear-gradient(135deg, #1a1d20 0%, #2d3748 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-.home-container h1 {
-  font-size: 4rem; /* roughly same as text-6xl */
-/* font-weight: 800; /* bold */
-/* margin: 0;
-} */
+/* Optional: Add animated background effect */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle,
+    rgba(13, 202, 240, 0.1) 0%,
+    transparent 70%
+  );
+  animation: pulse 8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Badge */
+.hero-badge {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.sparkle-icon {
+  color: #a5f3fc;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.badge-text {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Hero Title */
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-highlight {
+  color: #0dcaf0;
+  display: inline-block;
+}
+
+/* Hero Description */
+.hero-description {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 42rem;
+  line-height: 1.7;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-description strong {
+  color: white;
+  font-weight: 600;
+}
+
+/* Primary CTA Button */
+.hero-btn-primary {
+  background-color: white;
+  color: #1a73e8;
+  font-weight: 600;
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.hero-btn-primary:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #1557b0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Secondary CTA Button */
+.hero-btn-secondary {
+  background-color: transparent;
+  color: white;
+  font-weight: 600;
+  padding: 0.875rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: 100px !important;
+    min-height: auto;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-description {
+    font-size: 1.125rem;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    width: 100%;
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .badge-text {
+    font-size: 0.8125rem;
+  }
+}
+
+/* HomePage Sections */
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Features Section */
+.features-section {
+  padding: 4rem 2rem;
+  background-color: #f8f9fa;
+}
+
+.feature-icon-wrapper {
+  width: 60px;
+  height: 60px;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+  padding: 4rem 2rem;
+  background-color: #ffffff;
+}
+
+.steps-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.step-number-circle {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #2563eb 0%, #9333ea 100%);
+  font-size: 1rem;
+}
+
+.step-title {
+  color: #111827;
+}
+
+.step-description {
+  color: #4b5563;
+}
+
+/* Gradient backgrounds for feature icons */
+.gradient-blue-cyan {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+}
+
+.gradient-cyan-blue {
+  background: linear-gradient(135deg, #06b6d4 0%, #60a5fa 100%);
+}
+
+.gradient-purple-pink {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+}
+
+.gradient-green-emerald {
+  background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+}
+
+.gradient-indigo-blue {
+  background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+}
+
+.gradient-orange-yellow {
+  background: linear-gradient(135deg, #f97316 0%, #eab308 100%);
+}

@@ -6,7 +6,6 @@ class Expense(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=False)
-    category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'), nullable=True)
     amount = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(255), nullable=True)
     date_spent = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -14,13 +13,11 @@ class Expense(db.Model):
     deleted_at = db.Column(db.DateTime, nullable=True)
 
     user = db.relationship('User', backref=db.backref('expenses', lazy=True))
-    category = db.relationship('Category', backref=db.backref('expenses', lazy=True))
 
     def to_dict(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'category_id': self.category_id,
             'amount': self.amount,
             'description': self.description,
             'date_spent': self.date_spent.isoformat(),
@@ -31,7 +28,6 @@ class Expense(db.Model):
         try:
             new_expense = Expense(
                 user_id=user_id,
-                category_id=data.get('category_id'),
                 amount=data['amount'],
                 description=data.get('description'),
                 date_spent=data.get('date_spent', datetime.utcnow())
@@ -51,8 +47,6 @@ class Expense(db.Model):
         if not expense:
             return None
         try:
-            if 'category_id' in data:
-                expense.category_id = data['category_id']
             if 'amount' in data:
                 expense.amount = data['amount']
             if 'description' in data:
