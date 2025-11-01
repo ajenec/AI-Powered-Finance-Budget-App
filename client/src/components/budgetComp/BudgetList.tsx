@@ -1,8 +1,8 @@
 import type { Budget } from "../../types/budget";
-import { ProgressBar } from "react-bootstrap";
-import { Wallet, TrendingDown, TrendingUp } from "lucide-react";
-import { useEffect, useState } from "react";
 import { getCategories, Category } from "../../api/categoriesFetch";
+import { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
+import { ProgressBar } from "react-bootstrap";
 
 type Props = {
   budgets: Budget[];
@@ -12,13 +12,14 @@ type Props = {
 
 const BudgetList = ({ budgets, onEdit, onDelete }: Props) => {
   const [categories, setCategories] = useState<Category[]>([]);
+
   useEffect(() => {
     const load = async () => {
       try {
         const cats = await getCategories();
         setCategories(cats || []);
       } catch (err) {
-        // ignore error, just show ID if categories fail
+        console.error("Failed to load categories:", err);
       }
     };
     load();
@@ -37,78 +38,61 @@ const BudgetList = ({ budgets, onEdit, onDelete }: Props) => {
       </div>
     );
   }
+
   return (
-    <div className="d-flex flex-column gap-3">
-      {budgets.map((b) => {
-        const spent = b.goal_amount - b.remaining_amount;
-        const progress = Math.min((spent / b.goal_amount) * 100, 100);
-        const overBudget = spent > b.goal_amount;
+    <div className="table-responsive">
+      <table className="table table-striped table-hover align-middle shadow-sm rounded">
+        <thead className="table-success">
+          <tr>
+            <th>Category</th>
+            <th>Period</th>
+            <th>Duration</th>
+            <th>Goal ($)</th>
+            <th>Spent ($)</th>
+            <th>Progress</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {budgets.map((b) => {
+            const spent = b.goal_amount - b.remaining_amount;
+            const progress = Math.min((spent / b.goal_amount) * 100, 100);
+            const overBudget = spent > b.goal_amount;
 
-        return (
-          <div
-            key={b.id}
-            className="card shadow-sm border-0 rounded-3"
-            style={{ backgroundColor: "#f9f9f9" }}
-          >
-            <div className="card-body d-flex justify-content-between align-items-center">
-              <div>
-                <div className="fw-bold mb-1">
-                  <Wallet size={18} className="me-2 text-success" />
+            return (
+              <tr key={b.id}>
+                <td className="fw-semibold">
                   {getCategoryName(b.category_id)}
-                </div>
-                <div className="text-muted small mb-2">
-                  {b.period_type.toUpperCase()}
-                </div>
-
-                <div className="small">
-                  Goal:{" "}
-                  <span className="fw-semibold">
-                    ${b.goal_amount.toFixed(2)}
-                  </span>
-                </div>
-                <div className="small mb-2">
-                  Remaining:{" "}
-                  <span
-                    className={`fw-semibold ${
-                      overBudget ? "text-danger" : "text-success"
-                    }`}
-                  >
-                    ${b.remaining_amount.toFixed(2)}
-                  </span>
-                </div>
-
-                <ProgressBar
-                  now={progress}
-                  variant={overBudget ? "danger" : "success"}
-                  label={`${Math.round(progress)}%`}
-                  style={{ height: "8px" }}
-                />
-              </div>
-
-              <div className="text-end">
-                {onEdit && (
-                  <button
-                    onClick={() => onEdit(b)}
-                    className="btn btn-sm btn-outline-primary me-2"
-                  >
-                    <TrendingUp size={16} className="me-1" />
-                    Edit
-                  </button>
-                )}
-                {onDelete && (
-                  <button
-                    onClick={() => onDelete(b.id)}
-                    className="btn btn-sm btn-outline-danger"
-                  >
-                    <TrendingDown size={16} className="me-1" />
-                    Delete
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      })}
+                </td>
+                <td className="text-uppercase">{b.period_type}</td>
+                <td>{b.start_date || "—"}</td>
+                <td>${b.goal_amount.toFixed(2)}</td>
+                <td className={overBudget ? "text-danger fw-semibold" : ""}>
+                  ${spent.toFixed(2)}
+                </td>
+                <td style={{ width: "160px" }}>
+                  <ProgressBar
+                    now={progress}
+                    variant={overBudget ? "danger" : "success"}
+                    style={{ height: "8px" }}
+                  />
+                </td>
+                <td>
+                  {onDelete && (
+                    <button
+                      onClick={() => onDelete(b.id)}
+                      className="btn btn-sm btn-outline-danger"
+                    >
+                      <Trash2 size={16} className="me-1" />
+                      Delete
+                    </button>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };

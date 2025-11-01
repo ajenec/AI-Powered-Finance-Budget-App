@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.models import Income, User
+from app.models import Income, User, Category
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 
@@ -29,12 +29,27 @@ def create_income():
             return jsonify({'error': 'User not found'}), 404
         
         data = request.get_json()
-        # Convert date string to datetime if necessary and map to model field
-        if data and 'date' in data and isinstance(data['date'], str):
-            try:
-                data['received_at'] = datetime.fromisoformat(data['date'])
-            except ValueError:
-                return jsonify({'error': 'Invalid date format. Use ISO 8601.'}), 400
+        # Convert date string(s) to datetime if necessary
+        # Support clients sending either 'date' or 'received_at'
+        if data:
+            if 'date' in data and isinstance(data['date'], str):
+                try:
+                    data['received_at'] = datetime.fromisoformat(data['date'])
+                except ValueError:
+                    return jsonify({'error': 'Invalid date format. Use ISO 8601.'}), 400
+            elif 'received_at' in data and isinstance(data['received_at'], str):
+                try:
+                    data['received_at'] = datetime.fromisoformat(data['received_at'])
+                except ValueError:
+                    return jsonify({'error': 'Invalid received_at format. Use ISO 8601.'}), 400
+
+        # Validate category if provided
+        if data and data.get('category_id') is not None:
+            cat = Category.query.filter_by(id=data.get('category_id')).first()
+            if not cat:
+                return jsonify({'error': 'Invalid category_id'}), 400
+            if cat.type_of != 'income':
+                return jsonify({'error': 'category_id must be an income category'}), 400
 
         new_income = Income.create_income(data, user.id)
         return jsonify(new_income.to_dict()), 201
@@ -51,12 +66,26 @@ def update_income(income_id):
             return jsonify({'error': 'User not found'}), 404
         
         data = request.get_json()
-        # Convert date string if provided and map to model field
-        if data and 'date' in data and isinstance(data['date'], str):
-            try:
-                data['received_at'] = datetime.fromisoformat(data['date'])
-            except ValueError:
-                return jsonify({'error': 'Invalid date format. Use ISO 8601.'}), 400
+        # Convert date string(s) if provided
+        if data:
+            if 'date' in data and isinstance(data['date'], str):
+                try:
+                    data['received_at'] = datetime.fromisoformat(data['date'])
+                except ValueError:
+                    return jsonify({'error': 'Invalid date format. Use ISO 8601.'}), 400
+            elif 'received_at' in data and isinstance(data['received_at'], str):
+                try:
+                    data['received_at'] = datetime.fromisoformat(data['received_at'])
+                except ValueError:
+                    return jsonify({'error': 'Invalid received_at format. Use ISO 8601.'}), 400
+
+        # Validate category if provided
+        if data and data.get('category_id') is not None:
+            cat = Category.query.filter_by(id=data.get('category_id')).first()
+            if not cat:
+                return jsonify({'error': 'Invalid category_id'}), 400
+            if cat.type_of != 'income':
+                return jsonify({'error': 'category_id must be an income category'}), 400
        
         # Ensure the income belongs to the user before updating
         existing = Income.query.filter_by(id=income_id, user_id=user.id, deleted_at=None).first()

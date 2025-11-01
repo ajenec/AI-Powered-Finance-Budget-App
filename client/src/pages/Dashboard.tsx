@@ -34,6 +34,7 @@ const Dashboard: React.FC = () => {
           getBudgets(),
         ]);
         if (!mounted) return;
+        console.log("[Dashboard] Loaded budgets:", budgetsData);
         setExpenses(expensesData || []);
         setIncomes(incomesData || []);
         setBudgets(budgetsData || []);
@@ -46,8 +47,18 @@ const Dashboard: React.FC = () => {
     };
 
     fetchAll();
+
+    // Reload when user returns to dashboard
+    const handleFocus = () => {
+      console.log("[Dashboard] Window focused, reloading data...");
+      if (mounted) fetchAll();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
     return () => {
       mounted = false;
+      window.removeEventListener("focus", handleFocus);
     };
   }, []);
 

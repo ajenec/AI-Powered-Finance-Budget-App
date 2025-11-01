@@ -3,6 +3,7 @@ export interface Income {
   user_id: number;
   category_id?: number | null;
   amount: number;
+  description?: string | null;
   source: string;
   received_at: string; // ISO date string
   created_at?: string; // ISO date string, optional

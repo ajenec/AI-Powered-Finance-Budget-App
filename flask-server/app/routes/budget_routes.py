@@ -14,7 +14,13 @@ def get_budgets():
         if not user:
             return jsonify({'error': 'User not found'}), 404
         budgets = Budget.get_budgets_by_user(user.id)
-        return jsonify([b.to_dict() for b in budgets]), 200
+        result = [b.to_dict() for b in budgets]
+        
+        print(f"[GET BUDGETS] Returning {len(result)} budgets for user {user.id}")
+        for b_dict in result:
+            print(f"[GET BUDGETS] Budget {b_dict['id']}: goal={b_dict['goal_amount']}, remaining={b_dict['remaining_amount']}")
+        
+        return jsonify(result), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

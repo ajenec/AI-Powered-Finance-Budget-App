@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HeroSection } from "../components/ui/Hero";
 import Header from "../components/ui/Header";
@@ -11,7 +10,6 @@ import {
   BarChart3,
   Target,
   Sparkles,
-  CheckCircle2,
 } from "lucide-react";
 
 const HomePage: React.FC = () => {

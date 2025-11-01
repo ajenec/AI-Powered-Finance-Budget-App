@@ -68,9 +68,7 @@ export default function BudgetForm({
         className="bg-white p-4 p-md-5 rounded shadow-sm"
         style={{ maxWidth: "400px", width: "100%" }}
       >
-        <h3 className="mb-4 text-center fw-bold text-primary">
-          {submitLabel} Budget
-        </h3>
+        <h3 className="mb-4 text-center fw-bold text-primary">{submitLabel}</h3>
 
         {/* Category */}
         <div className="mb-3">

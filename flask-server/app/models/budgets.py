@@ -93,6 +93,45 @@ class Budget(db.Model):
     def remaining_budget(user_id, budget_id):
         pass  # Implement logic to calculate remaining budget
 
+    @staticmethod
+    def recalc_remaining_for_user_category(user_id, category_id):
+        """Recalculate remaining_amount for all budgets for a given user and category.
+        remaining = goal - sum(expenses within [start_date, end_date])
+        """
+        # Local import to avoid circular dependency at module load time
+        from .expenses import Expense
+
+        budgets = Budget.query.filter_by(user_id=user_id, category_id=category_id).all()
+        print(f"[RECALC] Found {len(budgets)} budgets for user {user_id}, category {category_id}")
+        
+        for b in budgets:
+            print(f"[RECALC] BEFORE Budget {b.id}: goal_amount={b.goal_amount}, remaining_amount={b.remaining_amount}")
+            
+            # Sum expenses for same user, same category, and within budget window
+            total_spent = (
+                db.session.query(db.func.coalesce(db.func.sum(Expense.amount), 0.0))
+                .filter(
+                    Expense.user_id == user_id,
+                    Expense.category_id == category_id,
+                    Expense.deleted_at.is_(None),
+                    Expense.date_spent >= b.start_date,
+                    Expense.date_spent <= b.end_date,
+                )
+                .scalar()
+            )
+            total_spent_float = float(total_spent or 0.0)
+            new_remaining = b.goal_amount - total_spent_float
+            
+            print(f"[RECALC] Calculation: {b.goal_amount} (goal) - {total_spent_float} (spent) = {new_remaining} (new remaining)")
+            
+            b.remaining_amount = new_remaining
+            
+            print(f"[RECALC] AFTER Budget {b.id}: goal_amount={b.goal_amount}, remaining_amount={b.remaining_amount}")
+            print(f"[RECALC] Period: {b.start_date} to {b.end_date}")
+        
+        db.session.commit()
+        print(f"[RECALC] Committed changes to database")
+
 
     def get_budget_summary(user_id, period_type):
         pass  # Implement logic to summarize budgets by period
