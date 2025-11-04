@@ -54,6 +54,14 @@ def create_budget():
             if not cat:
                 return jsonify({'error': 'Invalid category_id'}), 400
         new_budget = Budget.create_budget(data, user.id)
+        
+        # Recalculate remaining_amount based on existing expenses
+        Budget.recalc_remaining_for_user_category(user.id, new_budget.category_id)
+        
+        # Refresh the budget to get the updated remaining_amount
+        from app.models import db
+        db.session.refresh(new_budget)
+        
         return jsonify(new_budget.to_dict()), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 400

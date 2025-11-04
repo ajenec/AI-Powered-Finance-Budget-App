@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import NavBar from "../components/ui/NavBar";
+import SideNav from "../components/ui/SideNav";
 import Footer from "../components/ui/Footer";
 import { getExpenses } from "../api/expensesFetch";
 import { getIncomes } from "../api/incomesFetch";
@@ -81,9 +81,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-      <NavBar />
+      <SideNav />
 
-      <main className="container mt-4" style={{ paddingBottom: "90px" }}>
+      <main
+        className="container mt-4 with-sidenav"
+        style={{ paddingBottom: "90px" }}
+      >
         {/* <h1 className="mb-4"></h1> */}
 
         {loading && <p>Loading dashboard data…</p>}

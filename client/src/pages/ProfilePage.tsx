@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchUser, updateUserProfile, logout } from "../api/authFetch";
-import NavBar from "../components/ui/NavBar";
+import SideNav from "../components/ui/SideNav";
 import Footer from "../components/ui/Footer";
 
 const ProfilePage: React.FC = () => {
@@ -64,8 +64,8 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <NavBar />
-      <div className="container py-4">
+      <SideNav />
+      <div>
         <h2>My Profile</h2>
         {error && <div className="alert alert-danger">{error}</div>}
         {!user ? (
@@ -73,13 +73,8 @@ const ProfilePage: React.FC = () => {
         ) : (
           <form onSubmit={handleSave} className="mt-3">
             <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                value={user.email ?? ""}
-                readOnly
-              />
+              <label>Email</label>
+              <input type="email" value={user.email ?? ""} readOnly />
             </div>
 
             <div className="mb-3">

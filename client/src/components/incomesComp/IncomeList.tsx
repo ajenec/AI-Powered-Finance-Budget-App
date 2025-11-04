@@ -9,7 +9,11 @@ type Props = {
   onDelete?: (id: number) => void;
 };
 
-const IncomeList: React.FC<Props> = ({ incomes, onEdit, onDelete }) => {
+const IncomeList: React.FC<Props> = ({
+  incomes,
+  onEdit: _onEdit,
+  onDelete,
+}) => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -31,47 +35,86 @@ const IncomeList: React.FC<Props> = ({ incomes, onEdit, onDelete }) => {
   };
 
   if (!incomes || incomes.length === 0) {
-    return <div>No incomes yet.</div>;
-  }
-  return (
-    <>
-      <div className="table-responsive">
-        <table className="table table-striped table-hover align-middle shadow-sm rounded">
-          <thead className="table-success">
-            <tr>
-              <th>Date</th>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Source</th>
-              <th>Amount</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {incomes.map((inc) => (
-              <tr key={inc.id}>
-                <td>{new Date(inc.received_at).toLocaleDateString()}</td>
-                <td>{getCategoryName(inc.category_id) ?? "Uncategorized"}</td>
-                <td>{inc.description || "-"}</td>
-                <td>{inc.source}</td>
-                <td className="fw-semibold">{inc.amount.toFixed(2)}</td>
-                <td>
-                  {onEdit && <button onClick={() => onEdit(inc)}>Edit</button>}
-                  {onDelete && (
-                    <button
-                      onClick={() => onDelete(inc.id)}
-                      className="btn btn-sm btn-outline-danger"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    return (
+      <div className="text-center text-white/60 py-8">
+        No income yet. Create your first income to start tracking!
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div
+      className="overflow-x-auto rounded-xl border border-white/10 shadow-lg"
+      style={{
+        background: "rgba(42, 53, 68, 0.7)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+      }}
+    >
+      <table className="w-full border-collapse text-sm md:text-base">
+        <thead>
+          <tr className="border-b border-white/10 transition-colors duration-300 group hover:bg-black/20">
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-black/40 group-hover:text-white">
+              Date
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-black/40 group-hover:text-white">
+              Category
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-black/40 group-hover:text-white">
+              Description
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-black/40 group-hover:text-white">
+              Source
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-black/40 group-hover:text-white">
+              Amount
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-black/40 group-hover:text-white">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {incomes.map((inc) => (
+            <tr
+              key={inc.id}
+              className="border-b border-white/5 hover:bg-black/20 transition-colors duration-300 group"
+            >
+              <td className="py-3 px-3 md:py-4 md:px-6 text-white font-medium text-center">
+                {new Date(inc.received_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </td>
+              <td className="py-3 px-3 md:py-4 md:px-6 text-white font-medium whitespace-normal break-words text-center">
+                {getCategoryName(inc.category_id) ?? "Uncategorized"}
+              </td>
+              <td className="py-3 px-3 md:py-4 md:px-6 text-white/90 text-center">
+                {inc.description || "-"}
+              </td>
+              <td className="py-3 px-3 md:py-4 md:px-6 text-white/90 text-center">
+                {inc.source}
+              </td>
+              <td className="py-3 px-3 md:py-4 md:px-6 text-white font-semibold text-center">
+                ${inc.amount.toFixed(2)}
+              </td>
+              <td className="py-3 px-3 md:py-4 md:px-6 text-center">
+                {onDelete && (
+                  <button
+                    onClick={() => onDelete(inc.id)}
+                    className="inline-flex items-center justify-center p-2 rounded-lg text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all duration-200"
+                    title="Delete income"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

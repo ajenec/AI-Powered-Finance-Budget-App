@@ -1,26 +1,22 @@
-import React, { useEffect, useMemo, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import type { Income } from "../../types/income";
-import { getCategoriesByType, type Category } from "../../api/categoriesFetch";
+import type { Budget } from "../../types/budget";
+import { useEffect, useMemo, useState } from "react";
+import { getCategories, Category } from "../../api/categoriesFetch";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 type Props = {
-  incomes: Income[];
+  budgets: Budget[];
 };
 
-const IncomeChart: React.FC<Props> = ({ incomes }) => {
+const BudgetPieChart = ({ budgets }: Props) => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const load = async () => {
-      try {
-        const cats = await getCategoriesByType("income");
-        setCategories(cats || []);
-      } catch (err) {
-        console.error("Failed to load income categories:", err);
-      }
+      const cats = await getCategories();
+      setCategories(cats || []);
     };
     load();
   }, []);
@@ -31,29 +27,17 @@ const IncomeChart: React.FC<Props> = ({ incomes }) => {
     return cat ? cat.name : `ID ${id}`;
   };
 
-  const { chartData, options, chartKey } = useMemo(() => {
-    if (!incomes || incomes.length === 0 || categories.length === 0) {
-      return { chartData: null, options: {}, chartKey: "empty" };
-    }
+  const { data, options, chartKey } = useMemo(() => {
+    const labels = budgets.map((b) => getCategoryName(b.category_id));
+    const goalData = budgets.map((b) => b.goal_amount);
 
-    // Group by category_id (0 = Uncategorized)
-    const totals = new Map<number, number>();
-    incomes.forEach((inc) => {
-      const key = inc.category_id ?? 0;
-      totals.set(key, (totals.get(key) || 0) + inc.amount);
-    });
-
-    const labels: string[] = [];
-    const data: number[] = [];
-
-    // Generate vibrant colors matching BudgetPieChart
+    // Generate vibrant colors for each category
     const backgroundColors = [
       "rgba(224, 82, 25, 0.8)", // Burnt Orange
       "rgba(97, 176, 68, 0.8)", // Vibrant Green
       "rgba(59, 130, 246, 0.8)", // Blue
       "rgba(168, 85, 247, 0.8)", // Purple
-      "rgba(236, 72, 153, 0.8)", // Pink
-      "rgba(251, 146, 60, 0.8)", // Orange
+
       "rgba(14, 165, 233, 0.8)", // Sky Blue
       "rgba(234, 179, 8, 0.8)", // Yellow
     ];
@@ -69,19 +53,14 @@ const IncomeChart: React.FC<Props> = ({ incomes }) => {
       "rgba(234, 179, 8, 1)",
     ];
 
-    totals.forEach((total, catId) => {
-      labels.push(getCategoryName(catId === 0 ? null : catId));
-      data.push(total);
-    });
-
-    const chartData = {
+    const data = {
       labels,
       datasets: [
         {
-          label: "Income Distribution",
-          data,
-          backgroundColor: backgroundColors.slice(0, labels.length),
-          borderColor: borderColors.slice(0, labels.length),
+          label: "Budget Allocation",
+          data: goalData,
+          backgroundColor: backgroundColors.slice(0, budgets.length),
+          borderColor: borderColors.slice(0, budgets.length),
           borderWidth: 2,
         },
       ],
@@ -102,7 +81,7 @@ const IncomeChart: React.FC<Props> = ({ incomes }) => {
         },
         title: {
           display: true,
-          text: "Income Distribution",
+          text: "Budget Distribution",
           color: "#212529",
           font: { weight: 600, size: 16 },
         },
@@ -126,28 +105,18 @@ const IncomeChart: React.FC<Props> = ({ incomes }) => {
       },
     };
 
-    const chartKey = `income-pie-${incomes
-      .map((i) => `${i.id}:${i.amount}`)
+    const chartKey = `pie-${budgets
+      .map((b) => `${b.id}:${b.goal_amount}`)
       .join("|")}-${categories.length}`;
 
-    return { chartData, options, chartKey };
-  }, [incomes, categories]);
+    return { data, options, chartKey };
+  }, [budgets, categories]);
 
-  if (!incomes || incomes.length === 0) {
+  if (!budgets || budgets.length === 0) {
     return (
       <div>
         <div>
-          <p>No income to display</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!chartData) {
-    return (
-      <div>
-        <div>
-          <p>Unable to generate chart data.</p>
+          <p>No budgets to display</p>
         </div>
       </div>
     );
@@ -170,10 +139,10 @@ const IncomeChart: React.FC<Props> = ({ incomes }) => {
           minWidth: "350px",
         }}
       >
-        <Pie key={chartKey} data={chartData} options={options} />
+        <Pie key={chartKey} data={data} options={options} />
       </div>
     </div>
   );
 };
 
-export default IncomeChart;
+export default BudgetPieChart;

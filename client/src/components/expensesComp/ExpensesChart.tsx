@@ -35,10 +35,16 @@ const ExpensesChart: React.FC<Props> = ({ expenses }) => {
     loadCategories();
   }, []);
 
+  const getCategoryName = (id?: number | null) => {
+    if (!id) return "Unknown";
+    const cat = categories.find((c) => c.id === id);
+    return cat ? cat.name : `ID ${id}`;
+  };
+
   // Calculate expenses by category
-  const chartData = useMemo(() => {
+  const { chartData, options, chartKey } = useMemo(() => {
     if (!expenses || expenses.length === 0 || categories.length === 0) {
-      return null;
+      return { chartData: null, options: {}, chartKey: "empty" };
     }
 
     // Group expenses by category
@@ -53,114 +59,140 @@ const ExpensesChart: React.FC<Props> = ({ expenses }) => {
     // Prepare data for the chart
     const labels: string[] = [];
     const data: number[] = [];
-    const backgroundColor: string[] = [];
 
-    // Color palette for the pie chart
-    const colors = [
-      "#FF6384",
-      "#36A2EB",
-      "#FFCE56",
-      "#4BC0C0",
-      "#9966FF",
-      "#FF9F40",
-      "#FF6384",
-      "#C9CBCF",
-      "#4BC0C0",
-      "#FF6384",
+    // Generate vibrant colors matching BudgetPieChart
+    const backgroundColors = [
+      "rgba(224, 82, 25, 0.8)", // Burnt Orange
+      "rgba(97, 176, 68, 0.8)", // Vibrant Green
+      "rgba(59, 130, 246, 0.8)", // Blue
+      "rgba(168, 85, 247, 0.8)", // Purple
+      "rgba(236, 72, 153, 0.8)", // Pink
+      "rgba(251, 146, 60, 0.8)", // Orange
+      "rgba(14, 165, 233, 0.8)", // Sky Blue
+      "rgba(234, 179, 8, 0.8)", // Yellow
     ];
 
-    let colorIndex = 0;
+    const borderColors = [
+      "rgba(224, 82, 25, 1)",
+      "rgba(97, 176, 68, 1)",
+      "rgba(59, 130, 246, 1)",
+      "rgba(168, 85, 247, 1)",
+      "rgba(236, 72, 153, 1)",
+      "rgba(251, 146, 60, 1)",
+      "rgba(14, 165, 233, 1)",
+      "rgba(234, 179, 8, 1)",
+    ];
+
     categoryTotals.forEach((total, categoryId) => {
-      if (categoryId === 0) {
-        labels.push("Uncategorized");
-      } else {
-        const category = categories.find((c) => c.id === categoryId);
-        labels.push(category ? category.name : `Category ${categoryId}`);
-      }
+      labels.push(getCategoryName(categoryId === 0 ? null : categoryId));
       data.push(total);
-      backgroundColor.push(colors[colorIndex % colors.length]);
-      colorIndex++;
     });
 
-    return {
+    const chartData = {
       labels,
       datasets: [
         {
-          label: "Expenses by Category",
+          label: "Expense Distribution",
           data,
-          backgroundColor,
-          borderColor: "#fff",
+          backgroundColor: backgroundColors.slice(0, labels.length),
+          borderColor: borderColors.slice(0, labels.length),
           borderWidth: 2,
         },
       ],
     };
-  }, [expenses, categories]);
 
-  const options: ChartOptions<"pie"> = {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          padding: 15,
-          font: {
-            size: 12,
+    const options: ChartOptions<"pie"> = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom" as const,
+          labels: {
+            usePointStyle: true,
+            boxWidth: 8,
+            color: "#495057",
+            padding: 12,
+          },
+        },
+        title: {
+          display: true,
+          text: "Expense Distribution",
+          color: "#212529",
+          font: { weight: 600, size: 16 },
+        },
+        tooltip: {
+          backgroundColor: "rgba(33,37,41,0.9)",
+          borderColor: "rgba(255,255,255,0.1)",
+          borderWidth: 1,
+          callbacks: {
+            label: function (context: any) {
+              const label = context.label || "";
+              const value = context.parsed ?? 0;
+              const total = context.dataset.data.reduce(
+                (sum: number, val: number) => sum + val,
+                0
+              );
+              const percentage = total ? ((value / total) * 100).toFixed(1) : 0;
+              return `${label}: $${value.toFixed(2)} (${percentage}%)`;
+            },
           },
         },
       },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const label = context.label || "";
-            const value = context.parsed || 0;
-            const total = context.dataset.data.reduce(
-              (acc: number, val: number) => acc + val,
-              0
-            );
-            const percentage = ((value / total) * 100).toFixed(1);
-            return `${label}: $${value.toFixed(2)} (${percentage}%)`;
-          },
-        },
-      },
-    },
-  };
+    };
+
+    const chartKey = `expense-pie-${expenses
+      .map((e) => `${e.id}:${e.amount}`)
+      .join("|")}-${categories.length}`;
+
+    return { chartData, options, chartKey };
+  }, [expenses, categories]);
 
   if (isLoading) {
     return (
       <div className="text-center py-4">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
+        <p>Loading chart...</p>
       </div>
     );
   }
 
   if (!expenses || expenses.length === 0) {
     return (
-      <div className="alert alert-info text-center">
-        <p className="mb-0">
-          No expenses to display. Add some expenses to see the chart!
-        </p>
+      <div>
+        <div>
+          <p>No expenses to display</p>
+        </div>
       </div>
     );
   }
 
   if (!chartData) {
     return (
-      <div className="alert alert-warning text-center">
-        <p className="mb-0">Unable to generate chart data.</p>
+      <div>
+        <div>
+          <p>Unable to generate chart data.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="card shadow-sm">
-      <div className="card-body">
-        <h5 className="card-title text-center mb-4">Expenses by Category</h5>
-        <div style={{ maxWidth: "500px", margin: "0 auto" }}>
-          <Pie data={chartData} options={options} />
-        </div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          width: "350px",
+          height: "350px",
+          minHeight: "350px",
+          minWidth: "350px",
+        }}
+      >
+        <Pie key={chartKey} data={chartData} options={options} />
       </div>
     </div>
   );

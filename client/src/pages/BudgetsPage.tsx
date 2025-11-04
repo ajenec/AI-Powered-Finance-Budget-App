@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import BudgetForm from "../components/budgetComp/BudgetForm";
 import BudgetList from "../components/budgetComp/BudgetList";
-import BudgetCharts from "../components/budgetComp/BudgetCharts";
-import NavBar from "../components/ui/NavBar";
+import BudgetCharts from "../components/budgetComp/BudgetBarChart";
+import BudgetPieChart from "../components/budgetComp/BudgetPieChart";
+import SideNav from "../components/ui/SideNav";
 import Footer from "../components/ui/Footer";
 import type { Budget, NewBudget } from "../types/budget";
 import { getBudgets, createBudget, deleteBudget } from "../api/budgetsFetch";
@@ -70,67 +71,82 @@ const BudgetsPage: React.FC = () => {
 
   return (
     <>
-      <NavBar />
-      <div className="container py-4">
-        <h1 className="mb-4 fw-bold text-center">Budgets</h1>
-        {error && <div className="alert alert-danger">{error}</div>}
+      <SideNav />
+      <div className="min-h-screen pl-72 pr-6 py-8 overflow-x-hidden">
+        {/* Page Heading */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-1">Budgets</h1>
+          <p>Plan, track, and achieve your financial goals</p>
+        </div>
 
-        {/* Two-column layout */}
-        <div className="row g-4 align-items-start">
-          {/* LEFT — Summary Box */}
-          <div className="col-md-6">
-            <div className="card shadow-sm border-0 bg-light text-center p-4 h-100">
-              <h4 className="fw-semibold mb-3">Total Overview</h4>
-              <p className="mb-1">
-                <strong>Total Budgeted:</strong> ${totalGoal.toFixed(2)}
-              </p>
-              <p className="mb-1">
-                <strong>Total Spent:</strong> ${totalSpent.toFixed(2)}
-              </p>
-              <p className="mb-3">
-                <strong>Remaining:</strong> ${totalRemaining.toFixed(2)}
-              </p>
+        {error && <div className="text-red-400 mb-4">{error}</div>}
 
-              <div className="progress" style={{ height: "12px" }}>
+        {/* ---------- TOP SECTION: Overview + Chart + Form ---------- */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* LEFT SIDE: Overview + Pie Chart */}
+          <div className="flex flex-col gap-6">
+            <div
+              className="space-y-2 rounded-xl p-6 border border-white/10 shadow-lg"
+              style={{
+                background: "rgba(42, 53, 68, 0.7)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+              }}
+            >
+              <h2 className="text-xl font-semibold mb-3 text-white">
+                Total Overview
+              </h2>
+              <div className="space-y-2 text-white/90">
+                <p>
+                  <strong>Total Budgeted:</strong> ${totalGoal.toFixed(2)}
+                </p>
+                <p>
+                  <strong>Total Spent:</strong> ${totalSpent.toFixed(2)}
+                </p>
+                <p>
+                  <strong>Remaining:</strong> ${totalRemaining.toFixed(2)}
+                </p>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-white/10 rounded-full h-3 mt-3 overflow-hidden">
                 <div
-                  className={`progress-bar ${
-                    progress >= 100 ? "bg-danger" : "bg-success"
+                  className={`h-full rounded-full transition-all duration-300 ${
+                    progress >= 100 ? "bg-red-500" : "bg-green-500"
                   }`}
-                  role="progressbar"
                   style={{ width: `${Math.min(progress, 100)}%` }}
-                  aria-valuenow={progress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
                 />
               </div>
-              <small className="text-muted">
+              <small className="block mt-1 text-white/70">
                 {Math.round(progress)}% of total budget used
               </small>
             </div>
-          </div>
 
-          {/* RIGHT — Form */}
-          <div className="col-md-6">
-            <BudgetForm onSubmit={handleCreate} submitLabel="Create Budget" />
-          </div>
-        </div>
-
-        {/* Chart Section */}
-        <div className="mb-4">
-          <BudgetCharts budgets={budgets} />
-        </div>
-
-        {/* Budget List */}
-        <div className="mt-5">
-          {loading ? (
-            <div className="text-center text-muted py-4">
-              Loading budgets...
+            {/* Pie Chart below Overview */}
+            <div className="w-full flex justify-center">
+              <BudgetPieChart budgets={budgets} />
             </div>
+          </div>
+
+          {/* RIGHT SIDE: Form */}
+          <div className="flex justify-center items-start">
+            <div className="w-full max-w-md">
+              <BudgetForm onSubmit={handleCreate} submitLabel="Create Budget" />
+            </div>
+          </div>
+        </div>
+
+        {/* ---------- BOTTOM SECTION: Table + Bar Chart ---------- */}
+        <div className="flex flex-col gap-8">
+          <BudgetCharts budgets={budgets} />
+          {loading ? (
+            <div>Loading budgets...</div>
           ) : (
             <BudgetList budgets={budgets} onDelete={handleDeleteExpense} />
           )}
         </div>
       </div>
+
       <Footer />
     </>
   );

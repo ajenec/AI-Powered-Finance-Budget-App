@@ -62,92 +62,99 @@ export default function BudgetForm({
   };
 
   return (
-    <div className="d-flex justify-content-center">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-4 p-md-5 rounded shadow-sm"
-        style={{ maxWidth: "400px", width: "100%" }}
-      >
-        <h3 className="mb-4 text-center fw-bold text-primary">{submitLabel}</h3>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-3 p-6 rounded-xl shadow-lg border border-white/10 h-full"
+      style={{
+        background: "rgba(42, 53, 68, 0.7)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+      }}
+    >
+      <h5 className="text-xl font-semibold text-white mb-2">{submitLabel}</h5>
 
-        {/* Category */}
-        <div className="mb-3">
-          <label className="form-label fw-semibold">
-            Category <span className="text-danger">*</span>
-          </label>
-          <select
-            value={(form as UpdateBudget).category_id ?? ""}
-            onChange={(e) =>
-              handleChange(
-                "category_id",
-                e.target.value === "" ? undefined : Number(e.target.value)
-              )
-            }
-            className="form-select"
-            required
-          >
-            <option value="">— Select a category —</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Category */}
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-semibold text-white">
+          Category <span className="text-red-400">*</span>
+        </label>
+        <select
+          value={(form as UpdateBudget).category_id ?? ""}
+          onChange={(e) =>
+            handleChange(
+              "category_id",
+              e.target.value === "" ? undefined : Number(e.target.value)
+            )
+          }
+          className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-[#92C5E4] focus:border-transparent outline-none"
+          required
+        >
+          <option value="">— Select a category —</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id} className="bg-gray-800">
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        {/* Period Type */}
-        <div className="mb-3">
-          <label className="form-label fw-semibold">Period Type</label>
-          <select
-            value={(form as UpdateBudget).period_type}
-            onChange={(e) => handleChange("period_type", e.target.value)}
-            className="form-select"
-          >
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
-        </div>
+      {/* Period Type */}
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-semibold text-white">Period Type</label>
+        <select
+          value={(form as UpdateBudget).period_type}
+          onChange={(e) => handleChange("period_type", e.target.value)}
+          className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-[#92C5E4] focus:border-transparent outline-none"
+        >
+          <option value="monthly" className="bg-gray-800">
+            Monthly
+          </option>
+          <option value="yearly" className="bg-gray-800">
+            Yearly
+          </option>
+        </select>
+      </div>
 
-        {/* Start & End Dates */}
-        <div className="row g-2 mb-3">
-          <div className="col-6">
-            <label className="form-label fw-semibold">Start Date</label>
-            <input
-              type="date"
-              value={(form as UpdateBudget).start_date ?? ""}
-              onChange={(e) => handleChange("start_date", e.target.value)}
-              className="form-control"
-            />
-          </div>
-          <div className="col-6">
-            <label className="form-label fw-semibold">End Date</label>
-            <input
-              type="date"
-              value={(form as UpdateBudget).end_date ?? ""}
-              onChange={(e) => handleChange("end_date", e.target.value)}
-              className="form-control"
-            />
-          </div>
-        </div>
-
-        {/* Goal Amount */}
-        <div className="mb-3">
-          <label className="form-label fw-semibold">Goal Amount</label>
+      {/* Start & End Dates */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-semibold text-white">Start Date</label>
           <input
-            type="number"
-            step="0.01"
-            value={(form as UpdateBudget).goal_amount}
-            onChange={(e) =>
-              handleChange("goal_amount", Number(e.target.value))
-            }
-            className="form-control"
+            type="date"
+            value={(form as UpdateBudget).start_date ?? ""}
+            onChange={(e) => handleChange("start_date", e.target.value)}
+            className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-[#92C5E4] focus:border-transparent outline-none"
           />
         </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-semibold text-white">End Date</label>
+          <input
+            type="date"
+            value={(form as UpdateBudget).end_date ?? ""}
+            onChange={(e) => handleChange("end_date", e.target.value)}
+            className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-[#92C5E4] focus:border-transparent outline-none"
+          />
+        </div>
+      </div>
 
-        <button type="submit" className="btn btn-primary w-100 fw-semibold">
-          {submitLabel}
-        </button>
-      </form>
-    </div>
+      {/* Goal Amount */}
+      <div className="flex flex-col gap-1 flex-grow">
+        <label className="text-sm font-semibold text-white">Goal Amount</label>
+        <input
+          type="number"
+          step="0.01"
+          value={(form as UpdateBudget).goal_amount}
+          onChange={(e) => handleChange("goal_amount", Number(e.target.value))}
+          className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-[#92C5E4] focus:border-transparent outline-none"
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full py-3 px-4 bg-gradient-to-r from-[#92C5E4] to-[#B8DCF0] text-white font-semibold rounded-lg hover:from-[#7bb5d4] hover:to-[#a3cce0] transition-colors mt-auto"
+      >
+        {submitLabel}
+      </button>
+    </form>
   );
 }

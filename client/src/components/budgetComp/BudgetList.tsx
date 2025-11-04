@@ -2,7 +2,6 @@ import type { Budget } from "../../types/budget";
 import { getCategories, Category } from "../../api/categoriesFetch";
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { ProgressBar } from "react-bootstrap";
 
 type Props = {
   budgets: Budget[];
@@ -10,7 +9,7 @@ type Props = {
   onDelete?: (id: number) => void;
 };
 
-const BudgetList = ({ budgets, onEdit, onDelete }: Props) => {
+const BudgetList = ({ budgets, onEdit: _onEdit, onDelete }: Props) => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -33,24 +32,42 @@ const BudgetList = ({ budgets, onEdit, onDelete }: Props) => {
 
   if (!budgets || budgets.length === 0) {
     return (
-      <div className="text-center text-muted py-4">
+      <div className="text-center text-white/60 py-8">
         No budgets yet. Create your first goal to start tracking!
       </div>
     );
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-striped table-hover align-middle shadow-sm rounded">
-        <thead className="table-success">
-          <tr>
-            <th>Category</th>
-            <th>Period</th>
-            <th>Duration</th>
-            <th>Goal ($)</th>
-            <th>Spent ($)</th>
-            <th>Progress</th>
-            <th>Actions</th>
+    <div
+      className="overflow-x-auto rounded-xl border border-white/10 shadow-lg"
+      style={{
+        background: "rgba(42, 53, 68, 0.7)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+      }}
+    >
+      <table className="w-full border-collapse text-sm md:text-base">
+        <thead>
+          <tr className="border-b border-white/10">
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white">
+              Category
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white">
+              Period
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white">
+              Goal
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white">
+              Spent
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white">
+              Progress
+            </th>
+            <th className="text-center py-3 px-3 md:py-4 md:px-6 text-xs md:text-sm font-semibold text-white">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -60,31 +77,70 @@ const BudgetList = ({ budgets, onEdit, onDelete }: Props) => {
             const overBudget = spent > b.goal_amount;
 
             return (
-              <tr key={b.id}>
-                <td className="fw-semibold">
+              <tr
+                key={b.id}
+                className="border-b border-white/5 hover:bg-white/5 transition-all duration-200 group"
+              >
+                <td className="py-3 px-3 md:py-4 md:px-6 text-white font-medium whitespace-normal break-words">
                   {getCategoryName(b.category_id)}
                 </td>
-                <td className="text-uppercase">{b.period_type}</td>
-                <td>{b.start_date || "—"}</td>
-                <td>${b.goal_amount.toFixed(2)}</td>
-                <td className={overBudget ? "text-danger fw-semibold" : ""}>
+                <td className="py-3 px-3 md:py-4 md:px-6">
+                  <span className="capitalize text-sm text-white/90 bg-white/10 px-3 py-1 rounded-full">
+                    {b.period_type}
+                  </span>
+                </td>
+                <td className="py-3 px-3 md:py-4 md:px-6 text-white font-semibold">
+                  ${b.goal_amount.toFixed(2)}
+                </td>
+                <td
+                  className={`py-3 px-3 md:py-4 md:px-6 font-semibold ${
+                    overBudget ? "text-red-400" : "text-green-400"
+                  }`}
+                >
                   ${spent.toFixed(2)}
                 </td>
-                <td style={{ width: "160px" }}>
-                  <ProgressBar
-                    now={progress}
-                    variant={overBudget ? "danger" : "success"}
-                    style={{ height: "8px" }}
-                  />
+                <td className="py-3 px-3 md:py-4 md:px-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <div className="flex gap-2 h-5 md:h-6">
+                        {/* Spent bar */}
+                        <div className="flex-1 bg-white/10 rounded-lg overflow-hidden relative border border-white/5">
+                          <div
+                            className={`h-full transition-all duration-300 ${
+                              overBudget ? "bg-red-500" : "bg-green-500"
+                            }`}
+                            style={{ width: `${Math.min(progress, 100)}%` }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-xs font-medium text-white drop-shadow">
+                              Spent
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between mt-1.5">
+                        <small className="text-xs text-white/70">
+                          {Math.round(progress)}% used
+                        </small>
+                        <small
+                          className={`text-xs ${
+                            overBudget ? "text-red-400" : "text-white/70"
+                          }`}
+                        >
+                          ${b.remaining_amount.toFixed(2)} left
+                        </small>
+                      </div>
+                    </div>
+                  </div>
                 </td>
-                <td>
+                <td className="py-3 px-3 md:py-4 md:px-6 text-center">
                   {onDelete && (
                     <button
                       onClick={() => onDelete(b.id)}
-                      className="btn btn-sm btn-outline-danger"
+                      className="inline-flex items-center justify-center p-2 rounded-lg text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all duration-200"
+                      title="Delete budget"
                     >
-                      <Trash2 size={16} className="me-1" />
-                      Delete
+                      <Trash2 size={18} />
                     </button>
                   )}
                 </td>
