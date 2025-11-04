@@ -124,7 +124,6 @@ const ExpensePage: React.FC = () => {
         ) : (
           <>
             <div className="flex flex-col gap-8">
-              <h5 className="fw-bold mb-3">All Expenses</h5>
               <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} />
             </div>
           </>

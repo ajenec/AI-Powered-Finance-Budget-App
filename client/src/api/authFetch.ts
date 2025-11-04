@@ -29,7 +29,6 @@ export const signup = async (
 ) => {
   const [data, error] = await fetchHandler(
     "/api/auth/register",
-    // Backend expects snake_case keys: first_name, last_name
     getPostOptions({
       first_name: firstname,
       last_name: lastname,
@@ -38,7 +37,18 @@ export const signup = async (
       password: password,
     })
   );
-  if (error) throw error;
+  if (error) {
+    // If error is an object with 'error' property, throw that
+    if (error.error) {
+      throw new Error(error.error);
+    }
+    // If error is a string, throw as message
+    if (typeof error === "string") {
+      throw new Error(error);
+    }
+    // Otherwise, throw generic
+    throw new Error("Registration failed");
+  }
   return data;
 };
 
